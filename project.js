@@ -17,22 +17,22 @@ const SYMBOL_VALUES = {
     "🔷": 2,
 };
 
-const getDeposit = () => {
+const getStartingPoints = () => {
     while (true) {
-        const depositAmount = prompt("Enter deposit amount: ");
-        const numberDepositAmount = parseFloat(depositAmount);
+        const pointsAmount = prompt("Enter the starting points: ");
+        const numberPointsAmount = parseInt(pointsAmount);
 
-        if (isNaN(numberDepositAmount) || numberDepositAmount <= 0) {
-            console.log("Invalid deposit amount, try again. \n");
+        if (isNaN(numberPointsAmount) || numberPointsAmount <= 0) {
+            console.log("Invalid points amount, try again. \n");
         } else {
-            return numberDepositAmount;
+            return numberPointsAmount;
         }
     }
 };
 
 const getNumberOfLines = () => {
     while (true) {
-        const lines = prompt("Enter number of lines to bet on (1-3): ");
+        const lines = prompt("Enter number of lines to match (1-3): ");
         const numberOfLines = parseInt(lines);
 
         if (isNaN(numberOfLines) || numberOfLines <= 0 || numberOfLines > 3) {
@@ -43,15 +43,15 @@ const getNumberOfLines = () => {
     }
 };
 
-const getBet = (balance, lines) => {
+const getInvestmentPerLine = (pointsBalance, lines) => {
     while (true) {
-        const bet = prompt("Enter the bet amount per line: ");
-        const numberBet = parseFloat(bet);
+        const investment = prompt("Enter the points to invest per line: ");
+        const numberInvestment = parseFloat(investment);
 
-        if (isNaN(numberBet) || numberBet <= 0 || numberBet > balance / lines) {
-            console.log("Invalid bet, try again. \n");
+        if (isNaN(numberInvestment) || numberInvestment <= 0 || numberInvestment > pointsBalance / lines) {
+            console.log("Invalid investment points, try again. \n");
         } else {
-            return numberBet;
+            return numberInvestment;
         }
     }
 };
@@ -105,8 +105,8 @@ const printRows = (rows) => {
     }
 };
 
-const getWinnings = (rows, bet, lines) => {
-    let winnings = 0;
+const calculateEarnings = (rows, investmentPerLine, lines) => {
+    let earnings = 0;
 
     for (let row = 0; row < lines; row++) {
         const symbols = rows[row];
@@ -120,31 +120,31 @@ const getWinnings = (rows, bet, lines) => {
         }
 
         if (allSame) {
-            winnings += bet * SYMBOL_VALUES[symbols[0]];
+            earnings += investmentPerLine * SYMBOL_VALUES[symbols[0]];
         }
     }
 
-    return winnings;
+    return earnings;
 };
 
 const game = () => {
-    let balance = getDeposit();
+    let pointsBalance = getStartingPoints();
 
     while (true) {
         const numberOfLines = getNumberOfLines();
-        const bet = getBet(balance, numberOfLines);
-        balance -= bet * numberOfLines;
+        const investmentPerLine = getInvestmentPerLine(pointsBalance, numberOfLines);
+        pointsBalance -= investmentPerLine * numberOfLines;
         const reels = spin();
         const rows = transpose(reels);
         printRows(rows);
-        const winnings = getWinnings(rows, bet, numberOfLines);
-        balance += winnings;
-        console.log("You won ₹" + winnings.toString());
+        const earnings = calculateEarnings(rows, investmentPerLine, numberOfLines);
+        pointsBalance += earnings;
+        console.log("You earned " + earnings.toString() + " points!");
 
-        console.log("Current balance is ₹" + balance.toString() + "\n");
+        console.log("Current points: " + pointsBalance.toString() + "\n");
 
-        if (balance <= 0) {
-            console.log("Insufficient balance!");
+        if (pointsBalance <= 0) {
+            console.log("No more points left!");
             break;
         }
 
